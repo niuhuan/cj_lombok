@@ -1,0 +1,15 @@
+
+
+[dependencies]
+
+[package]
+  cjc-version = "0.53.13"
+  compile-option = ""
+  description = "nothing here"
+  link-option = ""
+  name = "cj_lombok"
+  output-type = "static"
+  src-dir = ""
+  target-dir = ""
+  version = "1.0.0"
+  package-configuration = {}
