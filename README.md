@@ -74,6 +74,11 @@ func serializationTest(): Unit {
 
 欢迎您的issue和pull request, fork时请保留源仓库地址
 
+#### 计划中的特性
+
+- [ ] 序列化、反序列化对SNAKE_CASE的兼容
+
+
 ## 📕 协议
 
 参考 [LICENSE](LICENSE) 文件
