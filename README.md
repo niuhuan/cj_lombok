@@ -34,7 +34,9 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 ```cangjie
 import cj_lombok.*
 import serialization.serialization.*
+import encoding.json.*
 
+// 使用cj_lombok
 @ToString
 @AllArgsConstructor
 @Eq
@@ -44,6 +46,7 @@ public class TestModel {
     let b: Int64
 }
 
+// @ToString @AllArgsConstructor @Eq 的使用
 func test() {
     let testInstanceA = TestModel(1,2)
     let testInstanceB = TestModel(1,3)
@@ -51,6 +54,19 @@ func test() {
     println("testInstance : ${testInstanceA}")
     @Assert(testInstanceA == testInstanceB, false)
     @Assert(testInstanceA == testInstanceC, true)
+}
+
+// @Serializable 的使用
+func serializationTest(): Unit {
+    let testInstance = TestModel(1,2)
+    let dm = testInstance.serialize()
+    let jsonObject = dm.toJson().asObject()
+    let jsonString = jsonObject.toJsonString()
+    logger.trace("jsonObjectString : ${jsonString}")
+    let jv: JsonValue = JsonValue.fromStr(jsonString)
+    let jdm = DataModel.fromJson(jv)
+    let deserialized = TestModel.deserialize(jdm)
+    @Assert(testInstance == deserialized, true)
 }
 ```
 
