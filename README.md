@@ -23,6 +23,7 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 | `ToSting` | 对class实现ToString接口，便于打印 |
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
+| `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `@AllArgsConstructor` 以及 `import serialization.serialization.*` |
 
 
 ## 🔖 用例
@@ -32,10 +33,12 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 
 ```cangjie
 import cj_lombok.*
+import serialization.serialization.*
 
 @ToString
 @AllArgsConstructor
 @Eq
+@Serializable
 public class TestModel {
     let a: Int64
     let b: Int64

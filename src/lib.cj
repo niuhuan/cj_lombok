@@ -11,11 +11,7 @@ const  bracketClose = ")"
 
 public macro ToString(input: Tokens): Tokens {
     // take the input and parse it as a class declaration
-    let decl = parseDecl(input)
-    if (!(decl is ClassDecl)) {
-        diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "ToString macro can only be applied to classes", "should be class")
-    }
-    let classDecl = (decl as ClassDecl).getOrThrow()  
+    let (inputDecl, classDecl) = parseClassDecl(input)
     // foreach var decl in the class declaration
     var toStringTokens = quote("")
     var first = true
@@ -45,7 +41,7 @@ public macro ToString(input: Tokens): Tokens {
     classDecl.superTypes.append(RefType(quote( ToString )))
     // return the class declaration
     let result = quote (
-            $(classDecl)
+            $(inputDecl)
     )
     return result
 }
@@ -53,11 +49,7 @@ public macro ToString(input: Tokens): Tokens {
 
 public macro AllArgsConstructor(input: Tokens): Tokens {
     // take the input and parse it as a class declaration
-    let decl = parseDecl(input)
-    if (!(decl is ClassDecl)) {
-        diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "AllArgsConstructor macro can only be applied to classes", "should be class")
-    }
-    let classDecl = (decl as ClassDecl).getOrThrow()
+    let (inputDecl, classDecl) = parseClassDecl(input)
     // identifier-type map
     // foreach var decl in the class declaration
     let map = ArrayList<(Token,  TypeNode)>()
@@ -91,18 +83,14 @@ public macro AllArgsConstructor(input: Tokens): Tokens {
     classDecl.body.decls.append(FuncDecl(constructorTokens))
     // return the class declaration
     let result = quote (
-            $(classDecl)
+            $(inputDecl)
     )
     return result
 }
 
 public macro Eq(input: Tokens): Tokens {
     // take the input and parse it as a class declaration
-    let decl = parseDecl(input)
-    if (!(decl is ClassDecl)) {
-        diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "Getter macro can only be applied to classes", "should be class")
-    }
-    let classDecl = (decl as ClassDecl).getOrThrow()
+    let (inputDecl, classDecl) = parseClassDecl(input)
     // foreach var decl in the class declaration
     var eqBodyTokens = quote ()
     var first = true
@@ -126,7 +114,91 @@ public macro Eq(input: Tokens): Tokens {
     classDecl.body.decls.append(FuncDecl(eqTokens))
     // return the class declaration
     let result = quote (
-            $(classDecl)
+            $(inputDecl)
     )
     return result
+}
+
+/*
+    public static func deserialize(dm: DataModel): B {
+        let dms = match (dm) {
+            case data: DataModelStruct => data
+            case _ => throw Exception("this data is not DataModelStruct")
+        }
+        B (
+            Int64.deserialize(dms.get("a")),
+            Int64.deserialize(dms.get("b")),
+        )
+    }
+
+    public func serialize(): DataModel {
+        DataModelStruct()
+            .add(field<Int64>("a", this.a))
+            .add(field<Int64>("b", this.b))
+    }
+*/
+public macro Serializable(input: Tokens): Tokens {
+    // take the input and parse it as a class declaration
+    let (inputDecl, classDecl) = parseClassDecl(input)
+    // foreach var decl in the class declaration
+    var deserializeTokens = quote ()
+    var serializeTokens = quote ()
+    for (decl in classDecl.body.decls){
+        if (let Some(varDecl) <- decl as VarDecl) {
+            let varName = varDecl.identifier
+            let varNameValue = varDecl.identifier.value
+            let propType = varDecl.declType
+            deserializeTokens += quote ( 
+                $(propType).deserialize(dms.get($(varNameValue))),
+            )
+            serializeTokens += quote ( 
+                .add(field<$(propType)>($(varNameValue), this.$(varName)))
+            )
+        }
+    }
+    deserializeTokens = quote (
+        public static func deserialize(dm: DataModel): $(classDecl.identifier) {
+            let dms = match (dm) {
+                case data: DataModelStruct => data
+                case _ => throw Exception("this data is not DataModelStruct")
+            }
+            $(classDecl.identifier) (
+                $(deserializeTokens)
+            )
+        }
+    )
+    serializeTokens = quote (
+        public func serialize(): DataModel {
+            DataModelStruct()
+                $(serializeTokens)
+        }
+    )
+    // add the Serializable interface to the class declaration 
+    let classIdentifierValue = classDecl.identifier
+    classDecl.superTypes.append(RefType(quote( Serializable < $(classIdentifierValue)  > )))
+    // add the deserializeTokens to the class declaration
+    classDecl.body.decls.append(FuncDecl(deserializeTokens))
+    // add the serializeTokens to the class declaration
+    classDecl.body.decls.append(FuncDecl(serializeTokens))
+    // return the class declaration
+    let result = quote (
+            $(inputDecl)
+    )
+    println("serialization result: ${result}")
+    return result
+}
+
+
+private func parseClassDecl(input: Tokens): (Decl, ClassDecl) {
+    let decl = parseDecl(input)
+    var thisDecl = decl
+    while(thisDecl is MacroExpandDecl) {
+        println("thisDecl is MacroExpandDecl")
+        thisDecl = (thisDecl as MacroExpandDecl).getOrThrow().macroInputDecl
+    }
+    if (decl is ClassDecl) {
+        return (decl, (decl as ClassDecl).getOrThrow())
+    }
+    diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro can only be applied to classes", "should be class")
+    throw Exception("macro can only be applied to classes")
 }
