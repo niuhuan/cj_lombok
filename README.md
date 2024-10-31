@@ -9,11 +9,10 @@ CJ_LOMBOK 基础代码生成器
 
 （当仓颉包管理器完善时，将会推送到仓库使用版本安装）
 
-
 ```yaml
 [dependencies]
 
-cj_lombok = { git = "https://github.com/niuhuan/cj_lombok.git" }
+cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 ```
 
 
