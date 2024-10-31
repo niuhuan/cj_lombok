@@ -184,7 +184,6 @@ public macro Serializable(input: Tokens): Tokens {
     let result = quote (
             $(inputDecl)
     )
-    println("serialization result: ${result}")
     return result
 }
 
@@ -193,7 +192,6 @@ private func parseClassDecl(input: Tokens): (Decl, ClassDecl) {
     let decl = parseDecl(input)
     var thisDecl = decl
     while(thisDecl is MacroExpandDecl) {
-        println("thisDecl is MacroExpandDecl")
         thisDecl = (thisDecl as MacroExpandDecl).getOrThrow().macroInputDecl
     }
     if (decl is ClassDecl) {
