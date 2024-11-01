@@ -24,11 +24,14 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
 | `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `@AllArgsConstructor` 以及 `import serialization.serialization.*` |
+| `Json` | 对class实现`toJsonString`和fromJsonString, 需要 `@Serializable` 以及 `import encoding.json.*` |
 
 
 ## 🔖 用例
 
 完整代码参见 [lib_tests.cj](src/tests/lib_tests.cj)
+
+运行单元测试 `cjpm test src/tests`
 
 
 ```cangjie
@@ -41,6 +44,7 @@ import encoding.json.*
 @AllArgsConstructor
 @Eq
 @Serializable
+@Json
 public class TestModel {
     let a: Int64
     let b: Int64
@@ -56,16 +60,12 @@ func test() {
     @Assert(testInstanceA == testInstanceC, true)
 }
 
-// @Serializable 的使用
+// @Serializable @Json 的使用
 func serializationTest(): Unit {
     let testInstance = TestModel(1,2)
-    let dm = testInstance.serialize()
-    let jsonObject = dm.toJson().asObject()
-    let jsonString = jsonObject.toJsonString()
+    let jsonString = testInstance.toJsonString()
     logger.trace("jsonObjectString : ${jsonString}")
-    let jv: JsonValue = JsonValue.fromStr(jsonString)
-    let jdm = DataModel.fromJson(jv)
-    let deserialized = TestModel.deserialize(jdm)
+    let deserialized = TestModel.fromJsonString(jsonString)
     @Assert(testInstance == deserialized, true)
 }
 ```
@@ -79,7 +79,6 @@ func serializationTest(): Unit {
 - [ ] 避免用户import其他包
 - [ ] `@ToString`: `@ToString(format=json)` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容
-- [ ] `@Json`: 字符串序列化反序列化
 
 
 ## 📕 协议

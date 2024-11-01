@@ -47,4 +47,12 @@ public class TestRunner{
         let deserialized = TestModel.deserialize(jdm)
         @Assert(testInstance == deserialized, true)
     }
+    @TestCase
+    func jsonTest(): Unit {
+        let testInstance = TestModel(1,2)
+        let jsonString = testInstance.toJsonString()
+        logger.trace("jsonObjectString : ${jsonString}")
+        let deserialized = TestModel.fromJsonString(jsonString)
+        @Assert(testInstance == deserialized, true)
+    }
 }

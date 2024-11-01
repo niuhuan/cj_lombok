@@ -43,6 +43,6 @@ public func to_string(input: Tokens): Tokens {
     // return the class declaration
     let result = quote (
             $(inputDecl)
-    )
+    )  
     return result
 }

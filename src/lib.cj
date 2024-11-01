@@ -5,6 +5,8 @@ import cj_lombok.to_string.*
 import cj_lombok.all_args_constructor.*
 import cj_lombok.eqs.*
 import cj_lombok.serializable.*
+public import cj_lombok.json.interfaces.*
+import cj_lombok.json.macros.*
 
 import std.ast.*
 import std.collection.*
@@ -23,5 +25,9 @@ public macro Eq(input: Tokens): Tokens {
 
 public macro Serializable(input: Tokens): Tokens {
     serializable(input)
+}
+
+public macro Json(input: Tokens): Tokens {
+    json(input)
 }
 
