@@ -76,7 +76,10 @@ func serializationTest(): Unit {
 
 #### 计划中的特性
 
+- [ ] 避免用户import其他包
+- [ ] `@ToString`: `@ToString(format=json)` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容
+- [ ] `@Json`: 字符串序列化反序列化
 
 
 ## 📕 协议
