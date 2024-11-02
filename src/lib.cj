@@ -24,7 +24,21 @@ public macro Eq(input: Tokens): Tokens {
 }
 
 public macro Serializable(input: Tokens): Tokens {
-    serializable(input)
+    serializable(input, false)
+}
+
+public macro Serializable(attr: Tokens, input: Tokens): Tokens {
+    if (attr.size == 0) {
+        return serializable(input, false)
+    }
+    if (attr.size > 1) {
+        diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "attr only support AllArgsConstructor")
+    }
+    if (attr[0].value == "AllArgsConstructor") {
+        return serializable(input, true)
+    }
+    diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "attr only support AllArgsConstructor")
+    throw Exception("macro error")
 }
 
 public macro Json(input: Tokens): Tokens {

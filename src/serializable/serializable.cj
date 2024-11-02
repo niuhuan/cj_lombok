@@ -22,7 +22,7 @@ import std.collection.*
             .add(field<Int64>("b", this.b))
     }
 */
-public func serializable(input: Tokens): Tokens {
+public func serializable(input: Tokens, allArgsConstructor: Bool): Tokens {
     // take the input and parse it as a class declaration
     let (inputDecl, classDecl) = parseClassDecl(input)
     // foreach var decl in the class declaration
@@ -33,9 +33,15 @@ public func serializable(input: Tokens): Tokens {
             let varName = varDecl.identifier
             let varNameValue = varDecl.identifier.value
             let propType = varDecl.declType
-            deserializeTokens += quote ( 
-                $(propType).deserialize(dms.get($(varNameValue))),
-            )
+            if (allArgsConstructor) {
+                deserializeTokens += quote ( 
+                    $(propType).deserialize(dms.get($(varNameValue))),
+                )
+            } else {
+                deserializeTokens += quote ( 
+                    obj.$(varName) = $(propType).deserialize(dms.get($(varNameValue)))
+                )
+            }
             serializeTokens += quote ( 
                 .add(field<$(propType)>($(varNameValue), this.$(varName)))
             )
@@ -47,8 +53,20 @@ public func serializable(input: Tokens): Tokens {
                 case data: DataModelStruct => data
                 case _ => throw Exception("this data is not DataModelStruct")
             }
-            $(classDecl.identifier) (
-                $(deserializeTokens)
+            $(
+                if (allArgsConstructor) {
+                    quote (
+                        $(classDecl.identifier) (
+                            $(deserializeTokens)
+                        )
+                    )
+                } else {
+                    quote (
+                        let obj = $(classDecl.identifier)()
+                        $(deserializeTokens)
+                        obj
+                    )
+                }
             )
         }
     )

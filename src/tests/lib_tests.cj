@@ -11,7 +11,7 @@ import encoding.json.*
 @ToString
 @AllArgsConstructor
 @Eq
-@Serializable
+@Serializable[AllArgsConstructor]
 @Json
 public class TestModel {
     let a: Int64
