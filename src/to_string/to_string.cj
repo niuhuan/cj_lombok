@@ -52,6 +52,11 @@ private func varToString(varDecl: VarDecl): Tokens {
         let pathTokens = quote ( this.$(propName) )
         return quote ( + $propNameValue + $eq + $(toupleValue(pathTokens, tupleType)) )
     }
+    else if (propType is RefType && (propType as RefType).getOrThrow().identifier.value == "Option") {
+        let refType = (propType as RefType).getOrThrow()
+        let pathTokens = quote ( this.$(propName) )
+        return quote ( + $propNameValue + $eq + $(optionValue(pathTokens, refType)) )
+    }
     quote ( + $propNameValue + $eq + this.$(propName).toString() )
 }
 
@@ -64,13 +69,43 @@ private func toupleValue(pathTokens: Tokens, tupleType: TupleType): Tokens {
         }
         let cType = cTypes[i]
         if (cType is TupleType) {
-            let newPathTokens = quote ( $pathTokens[$(i)] )
             tupleValueTokens += quote ( + )
+            let newPathTokens = quote ( $pathTokens[$(i)] )
             tupleValueTokens += toupleValue(newPathTokens, (cType as TupleType).getOrThrow())
-        } else {
+        }
+        else if (cType is RefType && (cType as RefType).getOrThrow().identifier.value == "Option") {
+            tupleValueTokens += quote ( + )
+            let newPathTokens = quote ( $pathTokens[$(i)] )
+            tupleValueTokens += optionValue(newPathTokens, (cType as RefType).getOrThrow())
+        }
+        else {
             tupleValueTokens += quote ( + $pathTokens [$(i)].toString() )
         }
     }
     tupleValueTokens += quote ( + ")" )
     return tupleValueTokens
+}
+
+private func optionValue(pathTokens: Tokens, refType: RefType): Tokens {
+    let cTypes = refType.typeArguments
+    if (cTypes.size != 1) {
+        throw Exception("Option type must have one type argument")
+    }
+    let newPathTokens = quote ( $pathTokens.getOrThrow() )
+    var someTokens = quote ()
+    let cType = cTypes[0]
+    if (cType is TupleType) {
+        someTokens += toupleValue(newPathTokens, (cType as TupleType).getOrThrow())
+    } else if (cType is RefType && (cType as RefType).getOrThrow().identifier.value == "Option") {
+        someTokens += optionValue(newPathTokens, (cType as RefType).getOrThrow())
+    } else {
+        someTokens += quote ( $(newPathTokens).toString() )
+    }
+    quote (
+        if ( $(pathTokens).isSome() ) {
+            "Some(" + $someTokens + ")"
+        } else {
+            "None"
+        }
+    )
 }
