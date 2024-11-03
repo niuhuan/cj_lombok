@@ -20,7 +20,7 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 
 | 宏定义 | 说明 |
 | -- | -- |
-| `Default` | 对class实现默认构造器`public init(){}`, `cj_lombok.Default`, 并对所有未赋值字段赋值默认值进行初始化, 数字型将会默认成`0`, 其余类型将会调用`cj_lombok.Default.default()`生成 |
+| `Default` | 对class实现默认构造器`public init(){}`, 并对所有未赋值默认值进行初始化, 基本类型将会默认成`0`/`false`, 其余类型将会调用无参构造器生成 |
 | `ToSting` | 对class实现`std.core.ToString`接口，便于打印 |
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
@@ -102,7 +102,7 @@ func serializationTest(): Unit {
 #### 计划中的特性
 
 - [ ] 避免用户import其他包
-- [ ] Default支持数组以及集合
+- [ ] Default支持元组等
 - [ ] Serializable 对default的支持
 - [ ] `@ToString`: `@ToString(format=json)` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容

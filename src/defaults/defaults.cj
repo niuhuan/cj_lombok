@@ -16,9 +16,7 @@ public let floatTypes = HashSet(["Float16", "Float32", "Float64"])
 
 public let boolType = "Bool"
 
-// 字符串类型使用 String 表示
-
-public let stringType = "String"
+public let optionType = "Option"
 
 public func default(input: Tokens) {
     // take the input and parse it as a class declaration
@@ -38,26 +36,7 @@ public func default(input: Tokens) {
             // println("=================")
             if (varDecl.assign.kind != ASSIGN) {
                 varDecl.assign = quote ( = )[0]
-                if (propType is PrimitiveType) {
-                    let typeValue = (propType as PrimitiveType).getOrThrow().keyword.value
-                    if (numberTypes.contains(typeValue)) {
-                        varDecl.expr = LitConstExpr( quote ( 0 ) )
-                    } else if (floatTypes.contains(typeValue)) {
-                        varDecl.expr = LitConstExpr( quote ( 0.0 ) )
-                    } else if (typeValue == boolType) {
-                        varDecl.expr = LitConstExpr( quote ( false ) )
-                    } else if (typeValue == stringType) {
-                        varDecl.expr = LitConstExpr( quote ( "" ) )
-                    }
-                } else if (propType is RefType) {
-                    let typeValue = (propType as RefType).getOrThrow().identifier.value
-                    // println("ref typeValue: ${quote($typeValue)}")
-                    if (typeValue == stringType) {
-                        varDecl.expr = LitConstExpr( quote ( "" ) )
-                    } else {
-                        varDecl.expr = CallExpr( quote ( getDefaultValue<$(propType)>() ) )
-                    }
-                }
+                varDecl.expr = typeExpr(propType, input)
             }
         }
     }
@@ -67,7 +46,6 @@ public func default(input: Tokens) {
         }
     )))
     // implement the default macro
-    classDecl.superTypes.append(RefType(quote ( Default<$(classDecl.identifier)> )))
     classDecl.body.decls.append(FuncDecl(quote (
         public static func default() : $(classDecl.identifier) {
             $(inputDecl.identifier)()
@@ -76,4 +54,32 @@ public func default(input: Tokens) {
     // return
     let result = quote ( $inputDecl )
     result
+}
+
+private func typeExpr(propType: TypeNode, input: Tokens ) : Expr {
+    if (propType is PrimitiveType) {
+        let typeValue = (propType as PrimitiveType).getOrThrow().keyword.value
+        if (numberTypes.contains(typeValue)) {
+            return LitConstExpr( quote ( 0 ) )
+        } else if (floatTypes.contains(typeValue)) {
+            return LitConstExpr( quote ( 0.0 ) )
+        } else if (typeValue == boolType) {
+            return LitConstExpr( quote ( false ) )
+        } else {
+            diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "unsupported type: ${typeValue}")
+            throw Exception("macro error")
+        }
+    } else if (propType is RefType) {
+        let typeValue = (propType as RefType).getOrThrow().identifier.value
+        // println("ref typeValue: ${quote($typeValue)}")
+        if (typeValue == optionType) {
+            return RefExpr( quote ( None ) )
+        }
+        else {
+            return CallExpr( quote ( $(propType)() ) )
+        }
+    }  else {
+            diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "unsupported type: ${quote($propType)}")
+            throw Exception("macro error")
+    }
 }

@@ -5,7 +5,6 @@ import cj_lombok.to_string.*
 import cj_lombok.all_args_constructor.*
 import cj_lombok.eqs.*
 import cj_lombok.defaults.*
-public import cj_lombok.defaults.interfaces.*
 import cj_lombok.serializable.*
 public import cj_lombok.json.interfaces.*
 import cj_lombok.json.macros.*
