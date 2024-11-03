@@ -104,7 +104,7 @@ func serializationTest(): Unit {
 - [ ] 避免用户import其他包
 - [ ] Default支持元组等
 - [ ] Serializable 对default的支持
-- [ ] `@ToString`: `@ToString(format=json)` 
+- [ ] ToString 支持 `format=json` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容
 
 

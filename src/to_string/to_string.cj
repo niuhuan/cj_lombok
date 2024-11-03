@@ -17,17 +17,13 @@ public func to_string(input: Tokens): Tokens {
     var toStringTokens = quote("")
     var first = true
     for ( decl in classDecl.body.decls){
-        if (let Some(propDecl) <- decl as VarDecl) {
-            let propName = propDecl.identifier
+        if (let Some(varDecl) <- decl as VarDecl) {
             if (!first) {
- 
                 toStringTokens += quote ( + $comma )
             } else {
                 first = false
             }
-            let propNameValue = 
-            propName.value
-            toStringTokens += quote ( + $propNameValue + $eq + this.$(propName).toString() )
+            toStringTokens += varToString(varDecl)
         }
     }
     // append the toString function to the class declaration
@@ -45,4 +41,36 @@ public func to_string(input: Tokens): Tokens {
             $(inputDecl)
     )  
     return result
+}
+
+private func varToString(varDecl: VarDecl): Tokens {
+    let propName = varDecl.identifier
+    let propType = varDecl.declType
+    let propNameValue =  propName.value
+    if (propType is TupleType) {
+        var tupleType = (propType as TupleType).getOrThrow()
+        let pathTokens = quote ( this.$(propName) )
+        return quote ( + $propNameValue + $eq + $(toupleValue(pathTokens, tupleType)) )
+    }
+    quote ( + $propNameValue + $eq + this.$(propName).toString() )
+}
+
+private func toupleValue(pathTokens: Tokens, tupleType: TupleType): Tokens {
+    var tupleValueTokens = quote ("(")
+    var cTypes = tupleType.types
+    for (i in 0..cTypes.size) {
+        if (i > 0) {
+            tupleValueTokens += quote ( + $comma )
+        }
+        let cType = cTypes[i]
+        if (cType is TupleType) {
+            let newPathTokens = quote ( $pathTokens[$(i)] )
+            tupleValueTokens += quote ( + )
+            tupleValueTokens += toupleValue(newPathTokens, (cType as TupleType).getOrThrow())
+        } else {
+            tupleValueTokens += quote ( + $pathTokens [$(i)].toString() )
+        }
+    }
+    tupleValueTokens += quote ( + ")" )
+    return tupleValueTokens
 }

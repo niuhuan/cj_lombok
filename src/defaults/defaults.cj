@@ -78,7 +78,22 @@ private func typeExpr(propType: TypeNode, input: Tokens ) : Expr {
         else {
             return CallExpr( quote ( $(propType)() ) )
         }
-    }  else {
+    } else if (propType is TupleType) {
+        let tupleType = (propType as TupleType).getOrThrow()
+        let types = tupleType.types
+        var tokens = quote ( \( )
+        var first = true
+        for (cType in types) {
+            if (!first) {
+                tokens += quote ( , )
+            }
+            tokens += quote ( $(typeExpr(cType, input)) )
+            first = false
+        }
+        tokens += quote( \) )
+        // println("tuple type: ${tokens}")
+        return TupleLiteral( tokens )
+    } else {
             diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "unsupported type: ${quote($propType)}")
             throw Exception("macro error")
     }
