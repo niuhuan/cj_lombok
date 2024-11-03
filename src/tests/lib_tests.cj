@@ -18,11 +18,35 @@ public class TestModel {
     let b: Int64
 }
 
+@When[test]
+@Default
+@ToString
+public class TestDefault {
+    var a: Int64
+    var b: Int64 = 3
+    var c: String
+    var d: TestDefault2
+}
+
+@When[test]
+@Default
+@ToString
+public class TestDefault2 {
+    var a: Int64
+    var b: Int64 = 3
+    var c: String
+}
 
 @When[test]
 @Test
 public class TestRunner{
     let logger = getGlobalLogger(("name", "TestRunner"))
+
+    @TestCase
+    func defaultTest(): Unit {
+        logger.trace("TestDefault : ${TestDefault()}")
+    }
+
     @TestCase
     func toStringTest(): Unit {
         let testInstance = TestModel(1,2)

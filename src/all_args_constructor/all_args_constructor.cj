@@ -17,6 +17,10 @@ public func all_args_constructor(input: Tokens): Tokens {
             map.append((propName, propType))
         }
     }
+    // if there are no properties, return the input
+    if (map.size == 0) {
+        return input
+    }
     // create the constructor
     var first = true
     var params = quote ()

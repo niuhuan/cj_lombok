@@ -4,6 +4,8 @@ import cj_lombok.commons.*
 import cj_lombok.to_string.*
 import cj_lombok.all_args_constructor.*
 import cj_lombok.eqs.*
+import cj_lombok.defaults.*
+public import cj_lombok.defaults.interfaces.*
 import cj_lombok.serializable.*
 public import cj_lombok.json.interfaces.*
 import cj_lombok.json.macros.*
@@ -33,6 +35,7 @@ public macro Serializable(attr: Tokens, input: Tokens): Tokens {
     }
     if (attr.size > 1) {
         diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro error", "attr only support AllArgsConstructor")
+        throw Exception("macro error")
     }
     if (attr[0].value == "AllArgsConstructor") {
         return serializable(input, true)
@@ -45,3 +48,6 @@ public macro Json(input: Tokens): Tokens {
     json(input)
 }
 
+public macro Default(input: Tokens): Tokens {
+    default(input)
+}

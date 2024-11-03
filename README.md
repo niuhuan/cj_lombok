@@ -20,7 +20,8 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 
 | 宏定义 | 说明 |
 | -- | -- |
-| `ToSting` | 对class实现ToString接口，便于打印 |
+| `Default` | 对class实现默认构造器`public init(){}`, `cj_lombok.Default`, 并对所有未赋值字段赋值默认值进行初始化, 数字型将会默认成`0`, 其余类型将会调用`cj_lombok.Default.default()`生成 |
+| `ToSting` | 对class实现`std.core.ToString`接口，便于打印 |
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
 | `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `import serialization.serialization.*` , 如果加上 `AllArgsConstructor` 则会使用全属性构造器, 否则先使用无参数构造器, 然后依次赋值 |
@@ -38,6 +39,30 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 import cj_lombok.*
 import serialization.serialization.*
 import encoding.json.*
+
+@When[test]
+@Default
+@ToString
+public class TestDefault {
+    var a: Int64
+    var b: Int64 = 3
+    var c: String
+    var d: TestDefault2
+}
+
+@When[test]
+@Default
+@ToString
+public class TestDefault2 {
+    var a: Int64
+    var b: Int64 = 3
+    var c: String
+}
+
+// `Default` 和 `ToString` 的使用
+func defaultTest(): Unit {
+    logger.trace("TestDefault : ${TestDefault()}")
+}
 
 // 使用cj_lombok
 @ToString
@@ -77,6 +102,8 @@ func serializationTest(): Unit {
 #### 计划中的特性
 
 - [ ] 避免用户import其他包
+- [ ] Default支持数组以及集合
+- [ ] Serializable 对default的支持
 - [ ] `@ToString`: `@ToString(format=json)` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容
 

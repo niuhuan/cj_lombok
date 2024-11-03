@@ -14,3 +14,4 @@ public func parseClassDecl(input: Tokens): (Decl, ClassDecl) {
     diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro can only be applied to classes", "should be class")
     throw Exception("macro can only be applied to classes")
 }
+
