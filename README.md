@@ -37,10 +37,7 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 
 ```cangjie
 import cj_lombok.*
-import serialization.serialization.*
-import encoding.json.*
 
-@When[test]
 @Default
 @ToString
 public class TestDefault {
@@ -50,7 +47,6 @@ public class TestDefault {
     var d: TestDefault2
 }
 
-@When[test]
 @Default
 @ToString
 public class TestDefault2 {
@@ -101,8 +97,7 @@ func serializationTest(): Unit {
 
 #### 计划中的特性
 
-- [ ] 避免用户import其他包
-- [ ] Serializable 对default的支持
+- [ ] `Serializable`对`Default`的支持
 - [ ] ToString 支持 `format=json` 
 - [ ] 序列化、反序列化对SNAKE_CASE的兼容
 

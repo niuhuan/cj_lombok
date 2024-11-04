@@ -4,8 +4,6 @@ import log.*
 import std.unittest.*
 import std.unittest.testmacro.*
 import cj_lombok.*
-import serialization.serialization.*
-import encoding.json.*
 
 @When[test]
 @ToString
