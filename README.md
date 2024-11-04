@@ -24,7 +24,7 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 | `ToSting` | 对class实现`std.core.ToString`接口，便于打印 |
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
-| `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `import serialization.serialization.*` , 如果加上 `AllArgsConstructor` 则会使用全属性构造器, 否则先使用无参数构造器, 然后依次赋值 |
+| `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `import serialization.serialization.*` , 如果加上 `AllArgsConstructor` 则会使用全属性构造器, 否则先使用无参数构造器, 然后依次赋值, 基础类型支持fuzzyJson（即"0"自动转0, "false"自动转false） |
 | `Json` | 对class实现`toJsonString`和fromJsonString, 需要 `@Serializable` 以及 `import encoding.json.*` |
 
 

@@ -34,11 +34,22 @@ public func serializable(input: Tokens, allArgsConstructor: Bool): Tokens {
             let varName = varDecl.identifier
             let varNameValue = varDecl.identifier.value
             let propType = varDecl.declType
-            // typeDefaultExpr
+            let parseTokens =
+                if (propType is PrimitiveType) {
+                    quote (
+                        else if (dms.get($(varNameValue)) is DataModelString) {
+                            $(propType).parse((dms.get($(varNameValue)) as DataModelString).getOrThrow().getValue())
+                        }
+                    )
+                } else {
+                    quote ()
+                }
             let varDeclDeserializeTokens = quote (
                 if (dms.get($(varNameValue)) is DataModelNull) {
                     $(typeDefaultExpr(propType, input))
-                } else {
+                }
+                $parseTokens
+                else {
                     $(propType).deserialize(dms.get($(varNameValue)))
                 }
             )

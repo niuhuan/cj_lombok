@@ -17,12 +17,14 @@ public import serialization.serialization.{
     DataModel,
     DataModelStruct,
     DataModelNull,
+    DataModelString,
     field
 }
 public import encoding.json.{
     ToJson,
     JsonValue
 }
+public import std.convert.Parsable
 
 public macro ToString(input: Tokens): Tokens {
     to_string(input)
