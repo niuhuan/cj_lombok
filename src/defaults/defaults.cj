@@ -36,7 +36,7 @@ public func default(input: Tokens) {
             // println("=================")
             if (varDecl.assign.kind != ASSIGN) {
                 varDecl.assign = quote ( = )[0]
-                varDecl.expr = typeExpr(propType, input)
+                varDecl.expr = typeDefaultExpr(propType, input)
             }
         }
     }
@@ -56,7 +56,7 @@ public func default(input: Tokens) {
     result
 }
 
-private func typeExpr(propType: TypeNode, input: Tokens ) : Expr {
+public func typeDefaultExpr(propType: TypeNode, input: Tokens ) : Expr {
     if (propType is PrimitiveType) {
         let typeValue = (propType as PrimitiveType).getOrThrow().keyword.value
         if (numberTypes.contains(typeValue)) {
@@ -87,7 +87,7 @@ private func typeExpr(propType: TypeNode, input: Tokens ) : Expr {
             if (!first) {
                 tokens += quote ( , )
             }
-            tokens += quote ( $(typeExpr(cType, input)) )
+            tokens += quote ( $(typeDefaultExpr(cType, input)) )
             first = false
         }
         tokens += quote( \) )

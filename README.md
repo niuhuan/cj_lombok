@@ -97,9 +97,9 @@ func serializationTest(): Unit {
 
 #### 计划中的特性
 
-- [ ] `Serializable`对`Default`的支持
-- [ ] ToString 支持 `format=json` 
-- [ ] 序列化、反序列化对SNAKE_CASE的兼容
+- [ ] `Serializable`对`Default`的支持, 当
+- [ ] ToString支持`format=json` 
+- [ ] `Serializable`(`Json`) 序列化、反序列化对SNAKE_CASE的兼容、FuzzyType
 
 
 ## 📕 协议

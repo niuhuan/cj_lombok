@@ -28,7 +28,7 @@ public func json(input: Tokens): Tokens {
     )
     // add the Serializable interface to the class declaration 
     let classIdentifierValue = classDecl.identifier
-    classDecl.superTypes.append(RefType(quote( JsonInterfaces < $(classIdentifierValue)  > )))
+    classDecl.superTypes.append(RefType(quote( JsonStringInterfaces < $(classIdentifierValue)  > )))
     // add the fromJsonStringTokens to the class declaration
     classDecl.body.decls.append(FuncDecl(fromJsonStringTokens))
     // add the toJsonStringTokens to the class declaration

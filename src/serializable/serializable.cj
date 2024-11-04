@@ -3,6 +3,7 @@ package cj_lombok.serializable
 import cj_lombok.commons.*
 import std.ast.*
 import std.collection.*
+import cj_lombok.defaults.typeDefaultExpr
 
 /*
     public static func deserialize(dm: DataModel): B {
@@ -33,13 +34,21 @@ public func serializable(input: Tokens, allArgsConstructor: Bool): Tokens {
             let varName = varDecl.identifier
             let varNameValue = varDecl.identifier.value
             let propType = varDecl.declType
+            // typeDefaultExpr
+            let varDeclDeserializeTokens = quote (
+                if (dms.get($(varNameValue)) is DataModelNull) {
+                    $(typeDefaultExpr(propType, input))
+                } else {
+                    $(propType).deserialize(dms.get($(varNameValue)))
+                }
+            )
             if (allArgsConstructor) {
                 deserializeTokens += quote ( 
-                    $(propType).deserialize(dms.get($(varNameValue))),
+                    $(varDeclDeserializeTokens),
                 )
             } else {
                 deserializeTokens += quote ( 
-                    obj.$(varName) = $(propType).deserialize(dms.get($(varNameValue)))
+                    obj.$(varName) = $(varDeclDeserializeTokens)
                 )
             }
             serializeTokens += quote ( 

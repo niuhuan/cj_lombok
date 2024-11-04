@@ -16,6 +16,7 @@ public import serialization.serialization.{
     Serializable,
     DataModel,
     DataModelStruct,
+    DataModelNull,
     field
 }
 public import encoding.json.{
