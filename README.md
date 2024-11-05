@@ -24,8 +24,8 @@ cj_lombok = { git = "https://gitcode.com/niuhuan_cn/cj_lombok.git" }
 | `ToSting` | 对class实现`std.core.ToString`接口，便于打印 |
 | `AllArgsConstructor`| 生成一个构造器，包含所有的属性字段 |
 | `Eq`| 生成 `public operator func ==`，使得类实例可以用等号比较 |
-| `Serializable` | 对class实现Serializable接口, 方便与json转化 需要 `import serialization.serialization.*` , 如果加上 `AllArgsConstructor` 则会使用全属性构造器, 否则先使用无参数构造器, 然后依次赋值, 基础类型支持fuzzyJson（即"0"自动转0, "false"自动转false） |
-| `Json` | 对class实现`toJsonString`和fromJsonString, 需要 `@Serializable` 以及 `import encoding.json.*` |
+| `Serializable` | 对class实现Serializable接口, 方便与json转化, 如果加上 `AllArgsConstructor` 则会使用全属性构造器, 否则先使用无参数构造器, 然后依次赋值, 基础类型支持fuzzyJson（即"0"自动转0, "false"自动转false） |
+| `Json` | 对class实现`toJsonString`和fromJsonString, 需要 `@Serializable` |
 
 
 ## 🔖 用例
@@ -97,9 +97,11 @@ func serializationTest(): Unit {
 
 #### 计划中的特性
 
-- [ ] `Serializable`对`Default`的支持, 当
+- [ ] Default当有默认构造器时不插入默认构造器代码
+- [ ] AllArgsConstructor当没有属性且没有默认构造器时插入默认构造器代码
+- [ ] `Serializable`对`Default`的支持, 以及使用默认的Expr进行构造
 - [ ] ToString支持`format=json` 
-- [ ] `Serializable`(`Json`) 序列化、反序列化对SNAKE_CASE的兼容、FuzzyType
+- [ ] `Serializable`(`Json`) 序列化、反序列化对SNAKE_CASE的兼容、别名
 
 
 ## 📕 协议
