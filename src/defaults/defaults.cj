@@ -8,7 +8,15 @@ public func default(input: Tokens) {
     // take the input and parse it as a class declaration
     let (inputDecl, classDecl) = parseClassDecl(input)
     // foreach var decl in the class declaration
+    var hasDefaultConstructor = false
     for (decl in classDecl.body.decls){
+        if (let Some(funcDecl) <- decl as FuncDecl) {
+            if (funcDecl.identifier.value == "init") {
+                if (funcDecl.funcParams.size == 0) {
+                    hasDefaultConstructor = true
+                }
+            }
+        }
         if (let Some(varDecl) <- decl as VarDecl) {
             let propType = varDecl.declType
             // println("=================")
@@ -27,10 +35,12 @@ public func default(input: Tokens) {
         }
     }
     // add a default constructor
-    classDecl.body.decls.append(FuncDecl(quote (
-        public init() {
-        }
-    )))
+    if (!hasDefaultConstructor) {
+        classDecl.body.decls.append(FuncDecl(quote (
+            public init() {
+            }
+        )))
+    }
     // implement the default macro
     classDecl.body.decls.append(FuncDecl(quote (
         public static func default() : $(classDecl.identifier) {

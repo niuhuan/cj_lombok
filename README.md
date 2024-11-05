@@ -97,7 +97,6 @@ func serializationTest(): Unit {
 
 #### 计划中的特性
 
-- [ ] Default当有默认构造器时不插入默认构造器代码
 - [ ] AllArgsConstructor当没有属性且没有默认构造器时插入默认构造器代码
 - [ ] `Serializable`对`Default`的支持, 以及使用默认的Expr进行构造
 - [ ] ToString支持`format=json` 
