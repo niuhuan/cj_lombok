@@ -9,8 +9,16 @@ public func all_args_constructor(input: Tokens): Tokens {
     let (inputDecl, classDecl) = parseClassDecl(input)
     // identifier-type map
     // foreach var decl in the class declaration
+    var hasDefaultConstructor = false
     let map = ArrayList<(Token,  TypeNode)>()
     for (decl in classDecl.body.decls){
+        if (let Some(funcDecl) <- decl as FuncDecl) {
+            if (funcDecl.identifier.value == "init") {
+                if (funcDecl.funcParams.size == 0) {
+                    hasDefaultConstructor = true
+                }
+            }
+        }
         if (let Some(propDecl) <- decl as VarDecl) {
             let propName = propDecl.identifier
             let propType = propDecl.declType
@@ -19,7 +27,13 @@ public func all_args_constructor(input: Tokens): Tokens {
     }
     // if there are no properties, return the input
     if (map.size == 0) {
-        return input
+        if (!hasDefaultConstructor) {
+            classDecl.body.decls.append(defaultInitDecl)
+        }
+        let result = quote (
+                $(inputDecl)
+        )
+        return result
     }
     // create the constructor
     var first = true

@@ -29,3 +29,8 @@ public func parseClassDecl(input: Tokens): (Decl, ClassDecl) {
     throw Exception("macro can only be applied to classes")
 }
 
+public let defaultInitDecl = 
+    FuncDecl(quote (
+        public init() {
+        }
+    ))

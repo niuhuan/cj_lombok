@@ -36,10 +36,7 @@ public func default(input: Tokens) {
     }
     // add a default constructor
     if (!hasDefaultConstructor) {
-        classDecl.body.decls.append(FuncDecl(quote (
-            public init() {
-            }
-        )))
+        classDecl.body.decls.append(defaultInitDecl)
     }
     // implement the default macro
     classDecl.body.decls.append(FuncDecl(quote (
