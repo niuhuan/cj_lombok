@@ -6,10 +6,10 @@ import std.ast.*
 
 public func default(input: Tokens) {
     // take the input and parse it as a class declaration
-    let (inputDecl, classDecl) = parseClassDecl(input)
+    let (inputDecl, classDeclIdentifier, body) = parseClassOrStructBody(input)
     // foreach var decl in the class declaration
     var hasDefaultConstructor = false
-    for (decl in classDecl.body.decls){
+    for (decl in body.decls){
         if (let Some(funcDecl) <- decl as FuncDecl) {
             if (funcDecl.identifier.value == "init") {
                 if (funcDecl.funcParams.size == 0) {
@@ -36,11 +36,11 @@ public func default(input: Tokens) {
     }
     // add a default constructor
     if (!hasDefaultConstructor) {
-        classDecl.body.decls.append(defaultInitDecl)
+        body.decls.append(defaultInitDecl)
     }
     // implement the default macro
-    classDecl.body.decls.append(FuncDecl(quote (
-        public static func default() : $(classDecl.identifier) {
+    body.decls.append(FuncDecl(quote (
+        public static func default() : $(classDeclIdentifier) {
             $(inputDecl.identifier)()
         }
     )))
