@@ -6,12 +6,12 @@ import std.collection.*
 
 public func all_args_constructor(input: Tokens): Tokens {
     // take the input and parse it as a class declaration
-    let (inputDecl, classDecl) = parseClassDecl(input)
+    let (inputDecl, _, body) = parseClassOrStructBody(input)
     // identifier-type map
     // foreach var decl in the class declaration
     var hasDefaultConstructor = false
     let map = ArrayList<(Token,  TypeNode)>()
-    for (decl in classDecl.body.decls){
+    for (decl in body.decls){
         if (let Some(funcDecl) <- decl as FuncDecl) {
             if (funcDecl.identifier.value == "init") {
                 if (funcDecl.funcParams.size == 0) {
@@ -28,7 +28,7 @@ public func all_args_constructor(input: Tokens): Tokens {
     // if there are no properties, return the input
     if (map.size == 0) {
         if (!hasDefaultConstructor) {
-            classDecl.body.decls.append(defaultInitDecl)
+            body.decls.append(defaultInitDecl)
         }
         let result = quote (
                 $(inputDecl)
@@ -55,7 +55,7 @@ public func all_args_constructor(input: Tokens): Tokens {
             $assignmentes
         }
     )
-    classDecl.body.decls.append(FuncDecl(constructorTokens))
+    body.decls.append(FuncDecl(constructorTokens))
     // return the class declaration
     let result = quote (
             $(inputDecl)
