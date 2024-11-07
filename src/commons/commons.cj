@@ -45,6 +45,21 @@ public func parseClassOrStructBody(input: Tokens): (Decl, Token, Body) {
     throw Exception("macro can only be applied to classes or structs")
 }
 
+public func parseClassOrStruct(input: Tokens): (Decl, Option<ClassDecl>, Option<StructDecl>, Body) {
+    let decl = parseDecl(input)
+    var thisDecl = decl
+    while(thisDecl is MacroExpandDecl) {
+        thisDecl = (thisDecl as MacroExpandDecl).getOrThrow().macroInputDecl
+    }
+    if (let Some(classDecl) <- decl as ClassDecl) {
+        return (decl, classDecl, None, classDecl.body)
+    } else if (let Some(structDecl) <- decl as StructDecl) {
+        return (decl, None, structDecl, structDecl.body)
+    }
+    diagReport(DiagReportLevel.ERROR, input[0..(0 + 1)], "macro can only be applied to classes or structs", "should be class or struct")
+    throw Exception("macro can only be applied to classes or structs")
+}
+
 
 public let defaultInitDecl = 
     FuncDecl(quote (

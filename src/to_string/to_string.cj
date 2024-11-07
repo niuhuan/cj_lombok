@@ -12,11 +12,11 @@ const  bracketClose = ")"
 
 public func to_string(input: Tokens): Tokens {
     // take the input and parse it as a class declaration
-    let (inputDecl, classDecl) = parseClassDecl(input)
+    let (inputDecl, classDecl, structDecl, body) = parseClassOrStruct(input)
     // foreach var decl in the class declaration
     var toStringTokens = quote("")
     var first = true
-    for ( decl in classDecl.body.decls){
+    for (decl in body.decls){
         if (let Some(varDecl) <- decl as VarDecl) {
             if (!first) {
                 toStringTokens += quote ( + $comma )
@@ -27,15 +27,24 @@ public func to_string(input: Tokens): Tokens {
         }
     }
     // append the toString function to the class declaration
-    let classIdentifierValue = classDecl.identifier.value
+    let identifierValue = if (let Some(classDecl) <- classDecl) {
+        classDecl.identifier.value
+    } else {
+        structDecl.getOrThrow().identifier.value
+    }
     toStringTokens = quote (
         public func toString(): String {
-            return $classIdentifierValue + $bracketOpen + $(toStringTokens) + $bracketClose
+            return $identifierValue + $bracketOpen + $(toStringTokens) + $bracketClose
         }
     )
-    classDecl.body.decls.append(FuncDecl(toStringTokens))
-    // add the ToString interface to the class declaration 
-    classDecl.superTypes.append(RefType(quote( ToString )))
+    body.decls.append(FuncDecl(toStringTokens))
+    // add the ToString interface to the class declaration
+    let superTypes = if (let Some(classDecl) <- classDecl) {
+        classDecl.superTypes
+    } else {
+        structDecl.getOrThrow().superTypes
+    }
+    superTypes.append(RefType(quote( ToString )))
     // return the class declaration
     let result = quote (
             $(inputDecl)
